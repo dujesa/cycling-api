@@ -36,6 +36,11 @@ class Event
      */
     private $endDate;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $importedAt;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -85,6 +90,18 @@ class Event
     public function setEndDate(?\DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    public function getImportedAt(): ?\DateTimeInterface
+    {
+        return $this->importedAt;
+    }
+
+    public function setImportedAt(?\DateTimeInterface $importedAt): self
+    {
+        $this->importedAt = $importedAt;
 
         return $this;
     }

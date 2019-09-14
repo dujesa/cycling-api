@@ -8,21 +8,36 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class EventsImport
 {
-    /**
-     * @var ArrayCollection
-     */
-    private $events;
 
-    public function __construct(array $events)
+    /**
+     * @var string
+     */
+    private $importUrl;
+
+    /**
+     * @var \DateTime
+     */
+    private $importRequestTime;
+
+    public function __construct(string $importUrl, \DateTime $importRequestTime)
     {
-        $this->events = new ArrayCollection($events);
+        $this->importUrl = $importUrl;
+        $this->importRequestTime = $importRequestTime;
     }
 
     /**
-     * @return ArrayCollection
+     * @return string
      */
-    public function getEvents(): ArrayCollection
+    public function getImportUrl(): string
     {
-        return $this->events;
+        return $this->importUrl;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getImportRequestTime(): \DateTime
+    {
+        return $this->importRequestTime;
     }
 }

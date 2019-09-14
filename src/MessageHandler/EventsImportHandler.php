@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Entity\Event;
+use App\Factory\EventFactory;
 use App\Message\EventsImport;
 use Doctrine\ORM\EntityManagerInterface;
 use Facebook\WebDriver\Remote\RemoteWebElement;
@@ -18,23 +20,46 @@ class EventsImportHandler implements MessageHandlerInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * @var EventFactory
+     */
+    private $eventFactory;
+
+    public function __construct(EntityManagerInterface $entityManager, EventFactory $eventFactory)
     {
         $this->entityManager = $entityManager;
+        $this->eventFactory = $eventFactory;
     }
 
+    /**
+     * @param EventsImport $message
+     *
+     * @throws \Exception
+     */
     public function __invoke(EventsImport $message)
     {
         $client = Client::createChromeClient();
-        $crawler = $client->request('GET', 'https://www.adriabike.hr/eventi/');
+        $crawler = $client->request('GET', $message->getImportUrl());
 
         $eventArticles = $crawler->filter('article');
 
-        $events = [];
         /** @var RemoteWebElement $eventArticle */
         foreach ($eventArticles as $eventArticle) {
-            $events[] = $eventArticle->findElement(WebDriverBy::className('title'))->getText();
+            $eventName = $eventArticle->findElement(WebDriverBy::className('title'))->getText();
+            $eventDuration = $eventArticle->findElement(WebDriverBy::className('date'))->getText();
+            $eventLocation = $eventArticle->findElement(WebDriverBy::className('location'))->getText();
+
+            /** @var Event $importedEvent */
+            $importedEvent = $this->eventFactory->create(
+                $eventName,
+                $eventDuration,
+                $eventLocation,
+                $message->getImportRequestTime()
+            );
+
+            $this->entityManager->persist($importedEvent);
         }
 
+        $this->entityManager->flush();
     }
 }
