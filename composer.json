@@ -16,6 +16,8 @@
         "symfony/dotenv": "4.2.*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.2.*",
+        "symfony/messenger": "4.2.*",
+        "symfony/orm-pack": "^1.0",
         "symfony/panther": "^0.3.0",
         "symfony/twig-bundle": "4.2.*",
         "symfony/var-dumper": "4.2.*",
